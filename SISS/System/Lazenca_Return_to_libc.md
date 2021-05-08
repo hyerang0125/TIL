@@ -395,7 +395,7 @@ p.interactive()
 
 - 다음과 같이 필요한 코드를 찾을 수 있다.
 
-![image-20210508202204392](C:\Users\hyera\AppData\Roaming\Typora\typora-user-images\image-20210508202204392.png)
+![image-20210508202204392](https://user-images.githubusercontent.com/59410565/117546163-0dd1bf00-b064-11eb-8b6c-3a44f1de891e.png)
 
 ------
 

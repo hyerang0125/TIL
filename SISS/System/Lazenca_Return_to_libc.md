@@ -159,21 +159,19 @@
 - vuln + 107 : read() 함수 호출
 - vuln + 122 : vuln() 함수의 RET 명령어
 
-![image](https://user-images.githubusercontent.com/59410565/117252948-9b08ee00-ae81-11eb-9bf5-5d458a6bf49c.png)
+![image](https://user-images.githubusercontent.com/59410565/117536000-b87db980-b033-11eb-80de-766b4ffa085c.png)
 
-- esp 레지스터가 가리키고 있는 최상위 stack 주소는 0xffffcfbc이다. 이 영역에 Return address(0x080485ac)가 저장되어 있다.
+- esp 레지스터가 가리키고 있는 최상위 stack 주소는 0xffffd01c이다. 이 영역에 Return address(0x080485ac)가 저장되어 있다.
 
-![image](https://user-images.githubusercontent.com/59410565/117255618-d3f69200-ae84-11eb-844e-9dddbe639d93.png)
+![image](https://user-images.githubusercontent.com/59410565/117536055-f11d9300-b033-11eb-8acd-c2ac01f519f3.png)
 
-![image](https://user-images.githubusercontent.com/59410565/117253254-fc30c180-ae81-11eb-93c4-ac50ac257eb7.png)
+![image](https://user-images.githubusercontent.com/59410565/117536074-009cdc00-b034-11eb-93c7-ccaadca6fc06.png)
 
-- buf 변수의 위치는 0xffffcf7a이고, Return address와 66byte 떨어져 있다. 즉, 문자를 66개 이상 입력하면, Return Address를 덮어쓸 수 있다.
+- buf 변수의 위치는 0xffffcfda이고, Return address와 66byte 떨어져 있다. 즉, 문자를 66개 이상 입력하면, Return Address를 덮어쓸 수 있다.
 
-![image](https://user-images.githubusercontent.com/59410565/117253531-431eb700-ae82-11eb-939f-37685658ecb7.png)
+![image](https://user-images.githubusercontent.com/59410565/117536120-422d8700-b034-11eb-93f7-a20b08790155.png)
 
-![image](https://user-images.githubusercontent.com/59410565/117253642-65b0d000-ae82-11eb-9fab-0e51f0dc125f.png)
-
-- 0xffffcfbc 영역의 값이 바뀌었다.
+- 0xffffd01c 영역의 값이 바뀌었다.
 
 ------
 
@@ -187,11 +185,17 @@ int system(const char *command)
 
 - system() 함수는 파라미터 값으로 실행할 command의 경로를 문자열로 전달받고 있다. 즉, RTL 기법을 사용하여 shell을 실행하기 위해 "/bin/sh" 문자열을 전달해야 한다.
 
-- ("/bin/sh" string address offset) = ("/bin/sh" string address in libc) - (libc start address)
+![image](https://user-images.githubusercontent.com/59410565/117536146-64bfa000-b034-11eb-8fca-1af27e22148d.png)
 
-![image](https://user-images.githubusercontent.com/59410565/117258190-aa8b3580-ae87-11eb-9bca-14df58817d4c.png)
+![image](https://user-images.githubusercontent.com/59410565/117536167-8587f580-b034-11eb-88d8-9b0ca32db0dd.png)
 
-> find "/bin/sh"가 왜 안될까...?
+- 0xf7e47680(printf function address in libc) - 0xf7dfe000(libc Start Address) = 0x300672(libc Base Address offset)
+- 0xf7e38db0(system function address in libc) - 0xf7dfe000(libc Start Address) = 0x3adb0(system function Address offset)
+- 0xf7f59b0b("/bin/sh" string address in libc) - 0xf7dfe000(libc Start Address) = 0x15bb0b("/bin/sh" string Address offset)
+
+![image](https://user-images.githubusercontent.com/59410565/117536198-a2242d80-b034-11eb-9134-6e0024c21c43.png)
+
+> find "/bin/sh"가 search "/bin/sh" 였음.
 
 ------
 
@@ -208,9 +212,9 @@ p.recvuntil('Printf() address : ')
 stackAddr = p.recvuntil('\n')
 stackAddr = int(stackAddr,16)
  
-libcBase = stackAddr - 0x54680
-sysAddr = libcBase + 0x45db0
-binsh = libcBase + 0x15902b
+libcBase = stackAddr - 0x49680
+sysAddr = libcBase + 0x3adb0
+binsh = libcBase + 0x15bb0b
  
 print hex(libcBase)
 print hex(sysAddr)
@@ -227,11 +231,11 @@ p.interactive()
 
 이와 같은 코드를 이용해 shell을 획득할 수 있다. 그러나 error가 발생한다.
 
-![image](https://user-images.githubusercontent.com/59410565/117258013-7adc2d80-ae87-11eb-926d-fa4d530cecd5.png)
+![image](https://user-images.githubusercontent.com/59410565/117536246-ee6f6d80-b034-11eb-8c42-5beffce6e23b.png)
 
 - system() 함수 호출 후에 0x42424242 영역으로 이동하려고 했기 때문에 error가 발생한다. 즉, 0x42424242 영역에 system() 함수 호출 ㅎ후 이동 할 영역의 주소를 저장하면 error가 발생하지 않는다.
 
-![image](https://user-images.githubusercontent.com/59410565/117258520-06ee5500-ae88-11eb-8241-d36264c57162.png)
+![image](https://user-images.githubusercontent.com/59410565/117536273-1232b380-b035-11eb-8fc3-810b60ba6c3b.png)
 
 ------
 
@@ -357,21 +361,21 @@ p.interactive()
 
 **[Break Point]**
 
-- 0x400676 : vuln() 함수의 첫번째 명령어
-- 0x4005e0 : read() 함수 호출
-- 0x4006e7 : vuln() 함수의 RET 명령어
+- vuln+0 : vuln() 함수의 첫번째 명령어
+- vuln+106 : read() 함수 호출
+- vuln+113 : vuln() 함수의 RET 명령어
 
-![image](https://user-images.githubusercontent.com/59410565/117282872-2b562b80-aea0-11eb-839d-bca1687c597e.png)
+![image](https://user-images.githubusercontent.com/59410565/117536373-a6047f80-b035-11eb-8c16-b31196c1255c.png)
 
-- ESP 레지스터가 가리키고 있는 최상위 stacak의 주소는 0x7fffffffddd8이고, 이 영역에 Return address(0x4006f6)이 저장되어 있다.
+- ESP 레지스터가 가리키고 있는 최상위 stacak의 주소는 0x7fffffffde48이고, 이 영역에 Return address(0x4006f6)이 저장되어 있다.
 
 ![image](https://user-images.githubusercontent.com/59410565/117283076-68222280-aea0-11eb-97bf-dfda8aacd898.png)
 
-![image](https://user-images.githubusercontent.com/59410565/117283279-9a338480-aea0-11eb-9de3-10f8102358a9.png)
+![image](https://user-images.githubusercontent.com/59410565/117536441-ff6cae80-b035-11eb-95f4-a19def40fd54.png)
 
 - 다음과 같이 buf 변수의 주소를 확인할 수 있다. buf 변수의 위치는 0x7fffffffdd90이고, return address와 72bytes 떨어져있다. 즉, 문자를 72개 이상 입력하면 return address를 덮어쓸 수 있다.
 
-![image](https://user-images.githubusercontent.com/59410565/117283553-dbc42f80-aea0-11eb-9194-5ddffc73f020.png)
+![image](https://user-images.githubusercontent.com/59410565/117536476-29be6c00-b036-11eb-9c63-536cb62855b9.png)
 
 - 다음과 같이 값이 변경된 것을 볼 수 있다.
 
@@ -383,11 +387,15 @@ p.interactive()
 
 - 다음과 같이 Libc 영역에서 system() 함수의 주소를 찾을 수 있다.
 
-![image](https://user-images.githubusercontent.com/59410565/117284127-7ae92700-aea1-11eb-9f99-ceddd0d1cf0f.png)
+![image](https://user-images.githubusercontent.com/59410565/117536498-4490e080-b036-11eb-8beb-2e4dc5a16406.png)
 
-![image](https://user-images.githubusercontent.com/59410565/117285815-6574fc80-aea3-11eb-8d70-2e2879305cf4.png)
+- 다음과 같이 "/bin/sh" 문자열을 찾을 수 있다.
 
-> 또 find "/bin/sh" 안됨... :(
+![image](https://user-images.githubusercontent.com/59410565/117536733-c6cdd480-b037-11eb-8c8f-7ec04288e13a.png)
+
+- 다음과 같이 필요한 코드를 찾을 수 있다.
+
+![image-20210508202204392](C:\Users\hyera\AppData\Roaming\Typora\typora-user-images\image-20210508202204392.png)
 
 ------
 
@@ -406,8 +414,8 @@ stackAddr = int(stackAddr,16)
   
 libcBase = stackAddr - 0x55810
 sysAddr = libcBase + 0x453a0
-binsh = libcBase + 0x18cd57 #못찾음
-poprdi = 0x400763 #이것도 못찾음
+binsh = libcBase + 0x18ce17
+poprdi = 0x400763
   
 print hex(libcBase)
 print hex(sysAddr)
@@ -424,4 +432,6 @@ p.interactive()
 ````
 
 
+
+![image](https://user-images.githubusercontent.com/59410565/117537408-9daf4300-b03b-11eb-808d-e21a6001ea09.png)
 

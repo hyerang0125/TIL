@@ -80,6 +80,8 @@ int main(){
 
 - leak을 위해 IDA로 printf 주소 알아내기
 
+> system 함수의 주소를 찾듯이 "print printf"를 사용해도 가능
+
 ![image](https://user-images.githubusercontent.com/59410565/118215248-26026d80-b4ac-11eb-9020-25e6d4ef1be3.png)
 
 printf()의 주소는 0x0804a010이다. 이 주소를 10진수로 변환하여 입력해주면 segmentation fault 없이 실행할 수 있을 것 같다.

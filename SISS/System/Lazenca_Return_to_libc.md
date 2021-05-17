@@ -233,7 +233,7 @@ p.interactive()
 
 ![image](https://user-images.githubusercontent.com/59410565/117536246-ee6f6d80-b034-11eb-8c42-5beffce6e23b.png)
 
-- system() 함수 호출 후에 0x42424242 영역으로 이동하려고 했기 때문에 error가 발생한다. 즉, 0x42424242 영역에 system() 함수 호출 ㅎ후 이동 할 영역의 주소를 저장하면 error가 발생하지 않는다.
+- system() 함수 호출 후에 0x42424242 영역으로 이동하려고 했기 때문에 error가 발생한다. 즉, 0x42424242 영역에 system() 함수 호출 후 이동 할 영역의 주소를 저장하면 error가 발생하지 않는다.
 
 ![image](https://user-images.githubusercontent.com/59410565/117536273-1232b380-b035-11eb-8fc3-810b60ba6c3b.png)
 

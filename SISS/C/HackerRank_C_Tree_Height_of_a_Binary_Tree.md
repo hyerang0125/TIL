@@ -30,3 +30,9 @@ int getHeight(struct node* root) {
 
 1. 만약 root가 비어있다면, 노드의 끝이 전 노드라는 것이므로 방금 지나온 edge는 없다. 따라서 -1을 return 한다.
 2. 재귀호출을 통해 LS와 RS의 높이를 구하고 더 큰 값에 1을 더한 뒤 return 한다.
+
+
+
+## 결과
+
+![image](https://user-images.githubusercontent.com/59410565/118491556-1314c500-b75a-11eb-925a-58889ed8de34.png)

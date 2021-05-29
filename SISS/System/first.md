@@ -136,6 +136,7 @@ print("scanf@got : " + str(hex(e.got["scanf"])))
 > a.plt(b.got) >> b의 주소를 a의 plt에 
 
 ```python
+from pwn import *
 from struct import *
  
 #context.log_level = 'debug'
